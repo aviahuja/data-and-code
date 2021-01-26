@@ -15,9 +15,9 @@ anes <- read_csv(here("data", "anes_pilot_2016.csv"))
 # select some features and clean: party, and 2 fts
 anes_short <- anes %>% 
   select(pid3, fttrump, ftobama) %>% 
-  mutate(democrat = as.factor(ifelse(pid3 == 1, 1, 0)),
-         fttrump = replace(fttrump, fttrump > 100, NA),
-         ftobama = replace(ftobama, ftobama > 100, NA)) %>%
+  mutate(democrat = as.factor(ifelse(pid3 == 1, 1, 0)),    #this is just simplifying the party ID to create just two levels through a new dummy for Democrats
+         fttrump = replace(fttrump, fttrump > 100, NA),    #removing extreme/nonsensical values
+         ftobama = replace(ftobama, ftobama > 100, NA)) %>% #same
   drop_na()
 
 anes_short <- anes_short %>% 
@@ -30,7 +30,7 @@ anes_short %>%
 
 # model fitting via tidymodels
 # define mod and engine
-mod <- logistic_reg() %>% # this is the only thing that changes from last time
+mod <- logistic_reg() %>% # this is the only thing that changes from last time (instead of using k-nearest neighbors from last time)
   set_engine("glm") %>% 
   set_mode("classification")
 
@@ -67,7 +67,7 @@ tidy(logit)
 
 # Predicted probabilities
 dont_like_trump <- tibble(fttrump = 0:10,
-                          ftobama = mean(anes_short$ftobama))
+                          ftobama = mean(anes_short$ftobama))  #constructing a probablity range for people who really don't like trump
 
 predicted_probs <- predict(logit, 
                            dont_like_trump, 

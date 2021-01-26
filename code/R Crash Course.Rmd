@@ -243,10 +243,10 @@ Data "munging" or "wrangling" is the process of getting your data into the form 
 Let's now work with some social science data, the [2016 American National Election Study](https://electionstudies.org/data-center/anes-2016-pilot-study/) (ANES or NES) pilot data. It has many features, including a battery of feeling thermometers (i.e., preferences on a scale from 1-100), which we will cover more later. Start by using the `here` package to load the data.
 
 ```{R eval=FALSE, echo=TRUE, message=FALSE, warning=FALSE}
-library(here)
+library(here)  #An alternative to setting a working directory manually
 library(tidyverse)
 
-NESdta <- read_csv(here("data", "anes_2016.csv"))
+NESdta <- read_csv(here("data", "anes_pilot_2016.csv"))
 ```
 
 Most of the functions we will cover are from the `dplyr` package, which is one of the main components of the tidyverse, in line with the tidy philosophy of *consistent syntax*. We will cover the following functions:
@@ -568,7 +568,7 @@ test_tidy  <- testing(split_tidy)
 # double check
 nrow(train_tidy)/nrow(NESdta_short)
 
-# viz
+# viz to make sure the density of a feature (variable) looks the same between a training and testing dataset
 tidy <- train_tidy %>% 
   ggplot(aes(x = fttrump)) + 
   geom_line(stat = "density") + 
@@ -635,7 +635,7 @@ base_r <- train_baseR %>%
 Now, we can view side by side. Should look pretty similar, though not exact given that we are randomly defining these sets.
 
 ```{r}
-library(patchwork)
+library(patchwork)   #Combines a bunch of ggplot2 objects
 
 (tidy + caret + base_r)
 
