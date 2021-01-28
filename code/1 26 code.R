@@ -8,14 +8,14 @@
 
 # load libs and set seed
 library(tidyverse)
-library(e1071)
+library(e1071)    #gold standard for starting out with SVMs
 
 set.seed(2345)
 
 # create the data for classification
-x <- matrix(rnorm(20*2), ncol=2)
-class <- c(rep(-1,10), rep(1,10))
-x[class == 1, ] = x[class == 1, ] + 1
+x <- matrix(rnorm(20*2), ncol=2)   #matrix of 20 random obs
+class <- c(rep(-1,10), rep(1,10))  #defning the two classes
+x[class == 1, ] = x[class == 1, ] + 1    #Pushing them apart
 
 # perfectly linearly seperable?
 ggplot(data.frame(x), 
@@ -26,10 +26,10 @@ ggplot(data.frame(x),
 # encode as factor for classification, rather than regression
 train <- data.frame(x = x, class = as.factor(class)) 
 
-svmfit <- svm(class ~ ., 
-              data = train, 
-              kernel = "linear", 
-              cost = 10, 
+svmfit <- svm(class ~ .,       #class is our dep. variable. we want to predict it using all the featurses 
+              data = train,    # in our training data
+              kernel = "linear", #kind of kernal we want
+              cost = 10,       #there is a greater penalty for being outside the margin (narrow margin)
               scale = FALSE); summary(svmfit)
 
 # now plot fit
@@ -41,12 +41,12 @@ svmfit$index
 svmfit <- svm(class ~ ., 
               data = train, 
               kernel = "linear", 
-              cost = 0.1, 
+              cost = 0.1,      #smaller cost means wider margin and more support vectors
               scale = TRUE); summary(svmfit)
 
 plot(svmfit, train)
-svmfit$index
-
+svmfit$index     #returns the list of which obs are the support vectors (help define the margins)
+# now with the wider margins, there are 16 support vectors(as opposed to 6 earlier)
 # now we get a larger number of support vectors, because the margin is now wider given the lesser penalty which allowed for more observations to be considered in the range of the margin and threshold placement, i.e., more support vectors with a wider margin (smaller cost to widening the margin)
 
 
@@ -57,12 +57,12 @@ tune_c <- tune(svm,
                class ~ ., 
                data = train, 
                kernel = "linear", 
-               ranges = list(cost = c(0.001, 0.01, 0.1, 1, 5, 10, 100)))
+               ranges = list(cost = c(0.001, 0.01, 0.1, 1, 5, 10, 100)))  #defining different ranges of cost to figure out the best margin based on these costs
 
 # best?
 tuned_model <- tune_c$best.model
 summary(tuned_model)
-
+# best cost it turns out ifrom the tuned model is 5
 
 #
 # Now we can predict the class label on a set of test obs
@@ -94,7 +94,7 @@ table(predicted = class_01,
 
 
 # 
-# Let's now increase the overlap 
+# Let's now increase the overlap in the data
 set.seed(2345)
 
 x <- matrix(rnorm(200*2), ncol = 2)
@@ -174,7 +174,7 @@ library(tictoc)
 library(tidymodels)
 
 set.seed(1234)
-theme_set(theme_minimal())
+theme_set(theme_minimal())     #sets the theme for ggplot globally
 
 # first (and focus): Herron's study/Krehbiel's data
 herron <- read_csv(here("data", "Herron.csv")) 
